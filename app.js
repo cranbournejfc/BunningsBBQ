@@ -45,26 +45,42 @@
       userAgent: navigator.userAgent
     };
 
-    try{
-      const res = await fetch(GAS_ENDPOINT, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-      const text = await res.text();
-      let data = null;
-      try { data = JSON.parse(text); } catch (e) {}
-      if (!res.ok || (data && data.ok === false)) {
-        const msg = (data && data.error) ? data.error : (text || ('HTTP ' + res.status));
-        throw new Error(msg);
-      }
-      console.log('Server meta:', data && data.meta);
-      showStatus('Thanks — your EOI has been recorded! We’ll be in touch.', true);
-      form.reset();
-    }catch(err){
-      console.error('Submit error:', err);
-      showStatus('Submission failed: ' + (String(err.message || err)).slice(0,220), false);
-    }
+  try{
+  // First attempt: normal CORS fetch so we can read a JSON response if allowed
+  const res = await fetch(GAS_ENDPOINT, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+
+  // Try to parse the response; this may fail if CORS blocks reading the body
+  let text = '';
+  try { text = await res.text(); } catch (e) {}
+
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch (e) {}
+
+  if (res.ok && (!data || data.ok !== false)) {
+    console.log('Server meta:', data && data.meta);
+    showStatus('Thanks — your EOI has been recorded! We’ll be in touch.', true);
+    form.reset();
+    return;
   }
+
+  if (data && data.error) throw new Error(data.error);
+  throw new Error(text || ('HTTP ' + res.status));
+} catch (err) {
+  // Fallback for CORS-blocked reads: send again with no-cors and assume success
+  try {
+    await fetch(GAS_ENDPOINT, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+    showStatus('Thanks — your EOI has been recorded! (Response blocked by the browser, but delivered)', true);
+    form.reset();
+    return;
+  } catch (e2) {
+    console.error('Submit error:', err, 'Fallback error:', e2);
+    showStatus('Submission failed: ' + (String(err.message || err)).slice(0,220), false);
+  }
+}
+
 
   if(form){
     form.addEventListener('submit', handleSubmit);

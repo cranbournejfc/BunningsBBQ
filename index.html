@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cranbourne Eagles JFC • Bunnings BBQ – Expression of Interest</title>
+  <meta name="description" content="Volunteer Expression of Interest form for Cranbourne Eagles JFC Bunnings BBQ." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <img src="./eagles-logo.png" alt="Cranbourne Eagles JFC logo" class="logo" onerror="this.style.display='none'">
+      <div class="titles">
+        <h1>Cranbourne Eagles JFC</h1>
+        <h2>Bunnings BBQ – Expression of Interest</h2>
+      </div>
+    </div>
+    <p class="tagline">Register to help run our fundraiser BBQ. Shifts run in 2‑hour slots from 8:00 to 16:00.</p>
+  </header>
+
+  <main>
+    <form id="eoiForm" novalidate>
+      <section class="card">
+        <h3>Your Details</h3>
+        <div class="grid">
+          <label class="field">
+            <span>Full name <b class="req">*</b></span>
+            <input type="text" id="name" name="name" required placeholder="First Last" autocomplete="name" />
+          </label>
+          <label class="field">
+            <span>Email <b class="req">*</b></span>
+            <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email" />
+          </label>
+          <label class="field">
+            <span>Mobile <b class="req">*</b></span>
+            <input type="tel" id="phone" name="phone" required placeholder="04xx xxx xxx" autocomplete="tel" />
+          </label>
+          <label class="field">
+            <span>Child/Team (optional)</span>
+            <input type="text" id="team" name="team" placeholder="e.g., U11 Boys Blue" />
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Preferred Roles</h3>
+        <p class="muted">Choose any that suit you (optional).</p>
+        <div class="checks">
+          <label><input type="checkbox" name="roles" value="Setup (7:30–8:00)"> Setup (7:30–8:00)</label>
+          <label><input type="checkbox" name="roles" value="Cooking"> Cooking</label>
+          <label><input type="checkbox" name="roles" value="Serving / Sales"> Serving / Sales</label>
+          <label><input type="checkbox" name="roles" value="Runner / Supplies"> Runner / Supplies</label>
+          <label><input type="checkbox" name="roles" value="Pack Down (16:00–16:30)"> Pack Down (16:00–16:30)</label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Availability – 2‑hour Slots</h3>
+        <p class="muted">You can pick multiple slots.</p>
+        <div class="checks slots">
+          <label><input type="checkbox" name="slots" value="08:00–10:00"> 08:00–10:00</label>
+          <label><input type="checkbox" name="slots" value="10:00–12:00"> 10:00–12:00</label>
+          <label><input type="checkbox" name="slots" value="12:00–14:00"> 12:00–14:00</label>
+          <label><input type="checkbox" name="slots" value="14:00–16:00"> 14:00–16:00</label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Notes (optional)</h3>
+        <textarea id="notes" name="notes" rows="4" placeholder="Anything we should know (dietary, limitations, who you’re with, etc.)"></textarea>
+      </section>
+
+      <input type="hidden" id="eventName" name="eventName" value="Bunnings BBQ" />
+      <div class="actions">
+        <button type="submit" class="btn">Submit EOI</button>
+        <span id="status" role="status" aria-live="polite" class="status"></span>
+      </div>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <p>Questions? Email <a href="mailto:info@cranbournejfc.com.au">info@cranbournejfc.com.au</a></p>
+  </footer>
+
+  <script>
+    // ---- CONFIG ----
+    // Replace this with your deployed Google Apps Script Web App URL (exec endpoint):
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/PASTE_YOUR_EXEC_URL_HERE/exec";
+  </script>
+  <script src="./app.js"></script>
+</body>
+</html>

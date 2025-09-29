@@ -25,13 +25,15 @@ form.addEventListener('submit', async (e) => {
   }
   const slots = getCheckedValues('slots');
   if(slots.length === 0){
-    showStatus('Please choose at least one 2‑hour slot.', false);
+    showStatus('Please choose at least one 2-hour slot.', false);
     return;
   }
 
   const payload = {
     timestamp: new Date().toISOString(),
     eventName: document.getElementById('eventName').value,
+    eventLocation: document.getElementById('eventLocation').value,
+    eventDate: document.getElementById('eventDate').value,
     name,
     email,
     phone,
@@ -45,70 +47,20 @@ form.addEventListener('submit', async (e) => {
   try{
     const res = await fetch(GAS_ENDPOINT, {
       method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
+      // Intentionally omit Content-Type to avoid CORS preflight; Apps Script reads raw body fine.
       body: JSON.stringify(payload)
     });
-    if(!res.ok){
-      const txt = await res.text();
-      throw new Error('Server error: ' + txt);
+    const text = await res.text(); // raw text for diagnostics
+    let data = null;
+    try { data = JSON.parse(text); } catch (e) {}
+    if (!res.ok || (data && data.ok === false)) {
+      const msg = (data && data.error) ? data.error : (text || `HTTP ${res.status}`);
+      throw new Error(msg);
     }
-    const data = await res.json().catch(()=>({ok:true}));
     showStatus('Thanks — your EOI has been recorded! We’ll be in touch.', true);
     form.reset();
   }catch(err){
-    console.error(err);
-    showStatus('Submission failed. Please try again or email us directly.', false);
-  }
-  form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  showStatus('Submitting…', true);
-
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  if(!name || !email || !phone){
-    showStatus('Please fill in name, email and mobile.', false);
-    return;
-  }
-  const slots = getCheckedValues('slots');
-  if(slots.length === 0){
-    showStatus('Please choose at least one 2-hour slot.', false);
-    return;
-  }
-
-  const payload = {
-    timestamp: new Date().toISOString(),
-    eventName: document.getElementById('eventName').value,
-    name, email, phone,
-    team: document.getElementById('team').value.trim(),
-    roles: getCheckedValues('roles'),
-    slots,
-    notes: document.getElementById('notes').value.trim(),
-    userAgent: navigator.userAgent
-  };
-
-  try {
-    const res = await fetch(GAS_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      // mode: 'cors' // default; keep it simple
-    });
-
-    const text = await res.text(); // read raw for better diagnostics
-    let data = null;
-    try { data = JSON.parse(text); } catch(e) {}
-
-    if (!res.ok || (data && data.ok === false)) {
-      const msg = data?.error || text || (`HTTP ${res.status}`);
-      throw new Error(msg);
-    }
-
-    showStatus('Thanks — your EOI has been recorded! We’ll be in touch.', true);
-    form.reset();
-  } catch (err) {
     console.error('Submit error:', err);
-    showStatus(`Submission failed: ${String(err).slice(0,200)}`, false);
+    showStatus(`Submission failed: ${String(err).message || String(err)}`.slice(0,220), false);
   }
 });

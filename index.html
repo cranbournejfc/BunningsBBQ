@@ -19,7 +19,7 @@
         <h2>Bunnings BBQ – Expression of Interest</h2>
       </div>
     </div>
-    <p class="tagline">Register to help run our fundraiser BBQ. Shifts run in 2‑hour slots from 8:00 to 16:00.</p>
+    <p class="tagline">Register to help run our fundraiser BBQ. Shifts run in 2-hour slots from 8:00 to 16:00.</p>
   </header>
 
   <main>
@@ -59,7 +59,7 @@
       </section>
 
       <section class="card">
-        <h3>Availability – 2‑hour Slots</h3>
+        <h3>Availability – 2-hour Slots</h3>
         <p class="muted">You can pick multiple slots.</p>
         <div class="checks slots">
           <label><input type="checkbox" name="slots" value="08:00–10:00"> 08:00–10:00</label>
@@ -68,6 +68,17 @@
           <label><input type="checkbox" name="slots" value="14:00–16:00"> 14:00–16:00</label>
         </div>
       </section>
+
+      
+      <section class="card">
+        <h3>Event Details</h3>
+        <p><strong>Location:</strong> Cranbourne Bunnings</p>
+        <p><strong>Date:</strong> Sunday 5 October 2025</p>
+        <p class="muted">Shifts: 08:00–16:00 (2-hour slots)</p>
+      </section>
+
+      <input type="hidden" id="eventLocation" name="eventLocation" value="Cranbourne Bunnings" />
+      <input type="hidden" id="eventDate" name="eventDate" value="2025-10-05" />
 
       <section class="card">
         <h3>Notes (optional)</h3>
@@ -87,7 +98,8 @@
   </footer>
 
   <script>
-       const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyikb0yyxXDFguIMH24AJ06-NMctdv90FfkzF67jBA-uIFZg2WDP2xr_54CxfSQQ6yRrA/exec";
+    // ---- CONFIG ----
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyikb0yyxXDFguIMH24AJ06-NMctdv90FfkzF67jBA-uIFZg2WDP2xr_54CxfSQQ6yRrA/exec";
   </script>
   <script src="./app.js"></script>
 </body>

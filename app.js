@@ -2,12 +2,16 @@
 // CORS-friendly submit (uses no-cors so the browser won't block/throw)
 
 (function () {
-  const form = document.getElementById('eoiForm');
-  const statusEl = document.getElementById('status');
+  'use strict';
+
+  var form = document.getElementById('eoiForm');
+  var statusEl = document.getElementById('status');
 
   function getCheckedValues(name) {
-    return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked'))
-      .map(el => el.value);
+    var nodes = document.querySelectorAll('input[name="' + name + '"]:checked');
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) out.push(nodes[i].value);
+    return out;
   }
 
   function showStatus(msg, ok) {
@@ -16,15 +20,19 @@
     statusEl.textContent = msg;
   }
 
+  function val(id) {
+    var el = document.getElementById(id);
+    return el ? (el.value || '').trim() : '';
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     showStatus('Submitting…', true);
 
-    // Basic validation
-    const name = (document.getElementById('name')?.value || '').trim();
-    const email = (document.getElementById('email')?.value || '').trim();
-    const phone = (document.getElementById('phone')?.value || '').trim();
-    const slots = getCheckedValues('slots');
+    var name = val('name');
+    var email = val('email');
+    var phone = val('phone');
+    var slots = getCheckedValues('slots');
 
     if (!name || !email || !phone) {
       showStatus('Please fill in name, email and mobile.', false);
@@ -35,39 +43,36 @@
       return;
     }
 
-    // Build payload (includes event details if present as hidden fields)
-    const payload = {
+    var payload = {
       timestamp: new Date().toISOString(),
-      eventName: document.getElementById('eventName')?.value || 'Bunnings BBQ',
-      eventLocation: document.getElementById('eventLocation')?.value || '',
-      eventDate: document.getElementById('eventDate')?.value || '',
-      name,
-      email,
-      phone,
-      team: (document.getElementById('team')?.value || '').trim(),
+      eventName: val('eventName') || 'Bunnings BBQ',
+      eventLocation: val('eventLocation'),
+      eventDate: val('eventDate'),
+      name: name,
+      email: email,
+      phone: phone,
+      team: val('team'),
       roles: getCheckedValues('roles'),
-      slots,
-      notes: (document.getElementById('notes')?.value || '').trim(),
+      slots: slots,
+      notes: val('notes'),
       userAgent: navigator.userAgent
     };
 
     try {
       // Use no-cors so the browser doesn't block the response (opaque response).
-      // This avoids "Failed to fetch" even though Apps Script doesn't send CORS headers.
       await fetch(GAS_ENDPOINT, {
         method: 'POST',
         mode: 'no-cors',
         body: JSON.stringify(payload)
       });
 
-      // We can't read the response in no-cors mode, but if no network error
-      // was thrown, the request was sent. Apps Script will append the row.
+      // We can’t read the response in no-cors mode, but if no network error was thrown, it was sent.
       showStatus('Thanks — your EOI has been recorded!', true);
       console.log('EOI sent (opaque response due to no-cors). Payload:', payload);
       form.reset();
     } catch (err) {
       console.error('Submit error:', err);
-      showStatus('Submission failed: ' + (String(err.message || err)).slice(0, 220), false);
+      showStatus('Submission failed: ' + String(err && err.message ? err.message : err).slice(0, 220), false);
     }
   }
 
